@@ -9,15 +9,15 @@ def cocycle (G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M] 
 
 variable {G} -- I want G to be implicit in this definition
 
-def cocycle.condition (f : cocycle G M) : ∀ (g h : G), f (g * h) = f g + g • (f h) :=
-  f.property
-
 -- so a cocycle is a pair: the function f, and the proof that it satisfies the cocycle identity.
 
 -- This line lets us think about a cocycle as the function.
 instance : has_coe_to_fun (cocycle G M) :=
 { F := λ _, G → M,
   coe := λ f, f.1}
+
+def cocycle.condition (f : cocycle G M) : ∀ (g h : G), f (g * h) = f g + g • (f h) :=
+  f.property
 
 namespace cocycle
 
