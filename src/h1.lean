@@ -34,7 +34,7 @@ def zero : cocycle G M := ⟨λ g, 0, begin
  example (g : G) :  g • (0 : M) = 0 := by library_search
 
 -- notation
-instance : has_zero (cocycle G M) := ⟨zero G M⟩
+instance : has_zero (cocycle G M) := ⟨zero M⟩
 
 /-- addition of cocycles -/
 def add (e f : cocycle G M) : cocycle G M :=
@@ -49,7 +49,7 @@ sorry
 end⟩
 
 -- notation
-instance : has_add (cocycle G M) := ⟨add G M⟩
+instance : has_add (cocycle G M) := ⟨add M⟩
 
 /-- negation of a cocycle -/
 def neg (f : cocycle G M) : cocycle G M :=
@@ -60,14 +60,14 @@ intro h,
 sorry end⟩
 
 -- notation
-instance : has_neg (cocycle G M) := ⟨neg G M⟩
+instance : has_neg (cocycle G M) := ⟨neg M⟩
 
 -- proof that cocycles form a group
 instance : add_comm_group (cocycle G M) :=
 { add := (+),
   add_assoc := begin
   intros a b c,
-  apply add_assoc
+  sorry
   end,
   zero := 0,
   zero_add := sorry,
