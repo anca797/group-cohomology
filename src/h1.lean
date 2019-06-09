@@ -41,15 +41,22 @@ def add (e f : cocycle G M) : cocycle G M :=
 ⟨λ g, e g + f g, begin 
 intro g,
 intro h,
+rw cocycle.condition M e,
+rw cocycle.condition M f,
+rw G_module.linear g (e h) (f h),
+simp,
+
+
 /-
 calc
-e (g * h) + f (g * h) = e g + g • (e h) + f (g * h) : ???
-...                   = e g + g • (e h) + f g + g • (f h) : ???
-...                   = e g + g • (e h) + g • (f h) + f g : add_comm
+e (g * h) + f (g * h) = e g + g • (e h) + f (g * h) : rw e.condition g h
+...                   = e g + g • (e h) + (f g + g • (f h)) : rw f.condition g h
+...                   = e g + g • (e h) + g • (f h) + f g : by simp?
 ...                   = e g + g • (e h + f h) + f g : by rw G_module.linear g (e h) (f h)
 ...                   = e g + f g +  g • (e h + f h) : by add_comm
+
 -/
-sorry
+
 
 end⟩
 
@@ -61,14 +68,17 @@ def neg (f : cocycle G M) : cocycle G M :=
 ⟨λ g, -(f g), begin 
 intro g,
 intro h,
+rw cocycle.condition M f,
+rw neg_add,
+rw g_neg g (f h),
 /-
 calc
-- f (g * h) = - (f g + g • (f h)) : ??? f.property?
+- f (g * h) = - (f g + g • (f h)) : rw f.condition g h 
 ...         = - f g - g • (f h) : 
 ...         = - f g + g (- f h)  : by rw g_neg g (f h)
 -/
 
-sorry end⟩
+end⟩
 
 -- notation
 instance : has_neg (cocycle G M) := ⟨neg M⟩
