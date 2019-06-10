@@ -8,6 +8,8 @@ class G_module (G : Type*) [group G] (M : Type*) [add_comm_group M]
 (mul : ∀ g h : G, ∀ m : M, g • (h • m) = (g * h) • m)
 (linear : ∀ g : G, ∀ m n : M, g • (m + n) = g • m + g • n)
 
+attribute [simp] G_module.linear
+
 definition H0 (G : Type*) [group G] (M : Type*) [add_comm_group M]
 [G_module G M]
 := {m : M // ∀ g : G, g • m = m}

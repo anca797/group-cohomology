@@ -16,7 +16,10 @@ instance : has_coe_to_fun (cocycle G M) :=
 { F := λ _, G → M,
   coe := λ f, f.1}
 
-def cocycle.condition (f : cocycle G M) : ∀ (g h : G), f (g * h) = f g + g • (f h) :=
+theorem cocycle.eq (e f : cocycle G M) : (e : G → M) = f → e = f := subtype.eq
+
+
+@[simp] def cocycle.condition (f : cocycle G M) : ∀ (g h : G), f (g * h) = f g + g • (f h) :=
   f.property
 
 namespace cocycle
@@ -91,7 +94,11 @@ instance : add_comm_group (cocycle G M) :=
   sorry
   end,
   zero := 0,
-  zero_add := sorry,
+  zero_add := begin
+  intro a,
+  
+  sorry
+  end,
   add_zero := sorry,
   neg := has_neg.neg,
   add_left_neg := sorry,
@@ -99,5 +106,14 @@ instance : add_comm_group (cocycle G M) :=
 
 end cocycle
 
-def coboundary {M : Type*} [add_comm_group M] [G_module G M] := {f : cocycle G M | ∃ m : M, ∀ g : G, f g = g • m - m}
+def coboundary (G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M] :=
+  {f : cocycle G M | ∃ m : M, ∀ g : G, f g = g • m - m}
+
+instance : is_add_subgroup (coboundary G M) :=
+{ zero_mem := begin sorry end,
+  add_mem := begin sorry end,
+  neg_mem := begin sorry end }
+
+def H1 (G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M] :=
+  quotient_add_group.quotient (coboundary G M)
 
