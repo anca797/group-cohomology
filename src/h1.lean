@@ -66,6 +66,12 @@ end⟩
 -- notation
 instance : has_add (cocycle G M) := ⟨add M⟩
 
+@[simp] lemma cocycle.cast_add (a b : cocycle G M) (x : G) : ((a+b) x = a x + b x) :=
+begin
+refl,
+end
+
+
 /-- negation of a cocycle -/
 def neg (f : cocycle G M) : cocycle G M :=
 ⟨λ g, -(f g), begin 
@@ -91,18 +97,42 @@ instance : add_comm_group (cocycle G M) :=
 { add := (+),
   add_assoc := begin
   intros a b c,
-  sorry
+  apply cocycle.eq,
+  ext x,
+  simp,
   end,
   zero := 0,
   zero_add := begin
   intro a,
-  
-  sorry
+  apply cocycle.eq,
+  ext x,
+  simp,
+  change a x + 0 = a x,
+  rw add_zero,
   end,
-  add_zero := sorry,
+  add_zero := begin
+  intro a,
+  apply cocycle.eq,
+  ext x,
+  change a x + 0 = a x,
+  rw add_zero,
+  end,
   neg := has_neg.neg,
-  add_left_neg := sorry,
-  add_comm := sorry }
+  add_left_neg := begin
+  intro a,
+  show -a + a = 0,
+  apply cocycle.eq,
+  ext x,
+  change - a x + a x = 0,
+  simp,
+  end,
+  add_comm := begin
+  intros a b,
+  apply cocycle.eq,
+  ext x,
+  change a x + b x = b x + a x,
+  rw add_comm,
+  end }
 
 end cocycle
 
