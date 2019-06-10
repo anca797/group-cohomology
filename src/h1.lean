@@ -34,8 +34,6 @@ def zero : cocycle G M := ⟨λ g, 0, begin
  ...               = 0 : g_zero g
  end⟩
 
- example (g : G) :  g • (0 : M) = 0 := by library_search
-
 -- notation
 instance : has_zero (cocycle G M) := ⟨zero M⟩
 
@@ -169,3 +167,22 @@ instance : is_add_subgroup (coboundary G M) :=
 def H1 (G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M] :=
   quotient_add_group.quotient (coboundary G M)
 
+def cocycle.map (G : Type*) [group G]
+  {A : Type*} [add_comm_group A] [G_module G A]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  (f : A → B) [G_module_hom G f] :
+  cocycle G A → cocycle G B :=
+λ c, ⟨λ g, f (c g), begin sorry end⟩
+
+lemma coboundary.map (G : Type*) [group G]
+  {A : Type*} [add_comm_group A] [G_module G A]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  (f : A → B) [G_module_hom G f] (c : cocycle G A) :
+  c ∈ coboundary G A → cocycle.map G f c ∈ coboundary G B := sorry
+
+instance (G : Type*) [group G]
+  {A : Type*} [add_comm_group A] [G_module G A]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  (f : A → B) [G_module_hom G f] :
+  is_add_group_hom (cocycle.map G f) :=
+{ map_add := begin sorry end }
