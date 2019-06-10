@@ -140,9 +140,31 @@ def coboundary (G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G 
   {f : cocycle G M | ∃ m : M, ∀ g : G, f g = g • m - m}
 
 instance : is_add_subgroup (coboundary G M) :=
-{ zero_mem := begin sorry end,
-  add_mem := begin sorry end,
-  neg_mem := begin sorry end }
+{ zero_mem := begin 
+  use 0, 
+  intro g,
+  rw g_zero g,
+  simp,
+  refl,
+  end,
+  add_mem := begin
+  intros a b,
+  intros ha hb,
+  cases ha with m hm,
+  cases hb with n hn,
+  use m+n,
+  simp [hm, hn], 
+  end,
+  neg_mem := begin
+  intro a,
+  intro ha,
+  cases ha with m hm,
+  use -m,
+  intro g,
+  show - a g = _,
+  simp [hm],
+  rw g_neg g,
+  end }
 
 def H1 (G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M] :=
   quotient_add_group.quotient (coboundary G M)
