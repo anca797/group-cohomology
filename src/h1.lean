@@ -172,13 +172,20 @@ def cocycle.map (G : Type*) [group G]
   {B : Type*} [add_comm_group B] [G_module G B]
   (f : A → B) [G_module_hom G f] :
   cocycle G A → cocycle G B :=
-λ c, ⟨λ g, f (c g), begin sorry end⟩
+λ c, ⟨λ g, f (c g), begin 
+intros g h,
+rw cocycle.condition A c,
+rw G_module_hom.add (c g) (g • c h),
+sorry end⟩
 
 lemma coboundary.map (G : Type*) [group G]
   {A : Type*} [add_comm_group A] [G_module G A]
   {B : Type*} [add_comm_group B] [G_module G B]
   (f : A → B) [G_module_hom G f] (c : cocycle G A) :
-  c ∈ coboundary G A → cocycle.map G f c ∈ coboundary G B := sorry
+  c ∈ coboundary G A → cocycle.map G f c ∈ coboundary G B := 
+  begin
+  sorry
+  end
 
 instance (G : Type*) [group G]
   {A : Type*} [add_comm_group A] [G_module G A]
