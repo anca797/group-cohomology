@@ -1,4 +1,5 @@
 import h0
+import group_theory.quotient_group
 
 variables (G : Type*) [group G] (M : Type*) [add_comm_group M]
 [G_module G M]
@@ -167,6 +168,7 @@ instance : is_add_subgroup (coboundary G M) :=
 def H1 (G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M] :=
   quotient_add_group.quotient (coboundary G M)
 
+
 def cocycle.map (G : Type*) [group G]
   {A : Type*} [add_comm_group A] [G_module G A]
   {B : Type*} [add_comm_group B] [G_module G B]
@@ -224,3 +226,50 @@ instance (G : Type*) [group G]
   show f (a g + b g)  = f (a g) + f (b g),
   rw G_module_hom.add G f (a g) (b g),
   end }
+
+--variables 
+--  {A : Type*} [add_comm_group A] [G_module G A]
+--  {B : Type*} [add_comm_group B] [G_module G B]
+
+instance : normal_add_subgroup (coboundary G M) := normal_add_subgroup_of_add_comm_group (coboundary G M)
+
+def H1_f (G : Type*) [group G]
+  {A : Type*} [add_comm_group A] [G_module G A]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  (f : A → B) [G_module_hom G f] :
+  H1 G A → H1 G B := quotient_add_group.map (coboundary G A) (coboundary G B)
+    (cocycle.map G f) (coboundary.map G f)
+
+open function is_add_group_hom
+
+noncomputable def delta (G : Type*) [group G]
+  {A : Type*} [add_comm_group A] [G_module G A]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  {C : Type*} [add_comm_group C] [G_module G C]
+  (f : A → B) [G_module_hom G f]
+  (g : B → C) [G_module_hom G g]
+  (hfg : short_exact f g) : H0 G C → H1 G A :=
+λ c, begin
+  rcases hfg with ⟨hf, hg, hfg⟩,
+  choose b hb using (hg c.val),
+  apply quotient.mk,
+  let h : G → A,
+  { intro γ,
+    let b' := γ • b - b,
+    have hb' : b' ∈ ker g,
+    { rw mem_ker,
+      rw is_add_group_hom.map_sub g,
+      rw sub_eq_zero,
+      rw G_module_hom.G_hom g,
+      rw hb,
+      exact c.property γ,
+      apply_instance,
+    },
+    change set.range f = ker g at hfg,
+    rw ←hfg at hb',
+    choose a ha using hb',
+    exact a
+  },
+  use h,
+  sorry -- TODO (KMB will try this)
+end
