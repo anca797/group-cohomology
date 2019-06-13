@@ -240,7 +240,9 @@ def H1_f (G : Type*) [group G]
   H1 G A → H1 G B := quotient_add_group.map (coboundary G A) (coboundary G B)
     (cocycle.map G f) (coboundary.map G f)
 
-open function is_add_group_hom
+open set function is_add_group_hom
+
+/- First attempt of delta
 
 noncomputable def delta (G : Type*) [group G]
   {A : Type*} [add_comm_group A] [G_module G A]
@@ -273,3 +275,97 @@ noncomputable def delta (G : Type*) [group G]
   use h,
   sorry -- TODO (KMB will try this)
 end
+-/
+
+noncomputable def delta_b (G : Type*) [group G]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  {C : Type*} [add_comm_group C] [G_module G C]
+  {g : B → C} [G_module_hom G g]
+  (hg : surjective g) : H0 G C → B :=
+λ c, classical.some (hg c.val)
+
+lemma delta_im_b (G : Type*) [group G]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  {C : Type*} [add_comm_group C] [G_module G C]
+  {g : B → C} [G_module_hom G g]
+  (hg : surjective g) (c : H0 G C) :
+  g (delta_b G hg c) = c.val := classical.some_spec (hg c.val)
+
+lemma delta_gb_sub_b_mem_ker (G : Type*) [group G]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  {C : Type*} [add_comm_group C] [G_module G C]
+  {g : B → C} [G_module_hom G g]
+  (hg : surjective g) (c : H0 G C) (γ : G) :
+  γ • (delta_b G hg c) - (delta_b G hg c) ∈ ker g :=
+by rw [mem_ker, is_add_group_hom.map_sub g, sub_eq_zero,
+  G_module_hom.G_hom g γ, delta_im_b G hg c, c.property γ]
+
+def delta_cocycle_ex_a (G : Type*) [group G]
+  {A : Type*} [add_comm_group A] [G_module G A]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  {C : Type*} [add_comm_group C] [G_module G C]
+  {f : A → B} [G_module_hom G f]
+  {g : B → C} [G_module_hom G g]
+  (hg : surjective g) (hfg : range f = ker g)
+  (c : H0 G C) (γ : G) :
+  ∃ a : A, f a = γ • (delta_b G hg c) - (delta_b G hg c) :=
+begin
+  show γ • (delta_b G hg c) - (delta_b G hg c) ∈ range f,
+  rw hfg,
+  exact delta_gb_sub_b_mem_ker G hg c γ
+end
+
+noncomputable def delta_cocycle_aux (G : Type*) [group G]
+  {A : Type*} [add_comm_group A] [G_module G A]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  {C : Type*} [add_comm_group C] [G_module G C]
+  {f : A → B} [G_module_hom G f]
+  {g : B → C} [G_module_hom G g]
+  (hg : surjective g) (hfg : range f = ker g)
+  (c : H0 G C) : G → A :=
+  λ γ, classical.some (delta_cocycle_ex_a G hg hfg c γ)
+
+lemma delta_cocycle_aux_a (G : Type*) [group G]
+  {A : Type*} [add_comm_group A] [G_module G A]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  {C : Type*} [add_comm_group C] [G_module G C]
+  {f : A → B} [G_module_hom G f]
+  {g : B → C} [G_module_hom G g]
+  (hg : surjective g) (hfg : range f = ker g)
+  (c : H0 G C) (γ : G) : f (delta_cocycle_aux G hg hfg c γ) =
+    γ • (delta_b G hg c) - (delta_b G hg c) :=
+classical.some_spec (delta_cocycle_ex_a G hg hfg c γ)
+
+noncomputable def delta_cocycle (G : Type*) [group G]
+  {A : Type*} [add_comm_group A] [G_module G A]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  {C : Type*} [add_comm_group C] [G_module G C]
+  {f : A → B} [G_module_hom G f]
+  {g : B → C} [G_module_hom G g]
+  (hf : injective f)
+  (hg : surjective g) (hfg : range f = ker g)
+  (c : H0 G C) : cocycle G A :=
+⟨delta_cocycle_aux G hg hfg c,
+begin
+  intros γ1 γ2,
+  apply hf,
+  rw delta_cocycle_aux_a G hg hfg,
+  rw is_add_group_hom.map_add f,
+  rw delta_cocycle_aux_a G hg hfg,
+  rw G_module_hom.G_hom f γ1,
+  rw delta_cocycle_aux_a G hg hfg,
+  rw ←G_module.mul,
+  rw G_module.map_sub,
+  simp,
+end⟩
+
+noncomputable def delta  (G : Type*) [group G]
+  {A : Type*} [add_comm_group A] [G_module G A]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  {C : Type*} [add_comm_group C] [G_module G C]
+  {f : A → B} [G_module_hom G f]
+  {g : B → C} [G_module_hom G g]
+  (hf : injective f)
+  (hg : surjective g) (hfg : range f = ker g)
+  (c : H0 G C) : H1 G A :=
+  quotient_add_group.mk (delta_cocycle G hf hg hfg c)

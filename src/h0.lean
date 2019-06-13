@@ -38,6 +38,15 @@ begin
   exact g_zero g
 end
 
+lemma G_module.map_sub (g : G) (m n : M) : g • (m - n) = g • m - g • n :=
+begin
+  rw eq_sub_iff_add_eq,
+  rw ←G_module.linear,
+  congr',
+  rw sub_add_cancel
+end
+
+
 theorem H0.add_closed (m n : M)
   (hm : ∀ g : G, g • m = m) (hn : ∀ g : G, g • n = n) :
 ∀ g : G, g • (m + n) = m + n :=
