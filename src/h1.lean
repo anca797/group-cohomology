@@ -186,9 +186,28 @@ lemma coboundary.map (G : Type*) [group G]
   c ∈ coboundary G A → cocycle.map G f c ∈ coboundary G B := 
   begin
   intro hc,
-
-  sorry
+  cases hc with m hm,
+  use f m,
+  change ∀ (g : G), f (c g) = g • f m - f m,
+  intro g,
+  rw hm,
+  simp,
+  rw [G_module_hom.add G f (-m) (g • m), G_module_hom.G_hom f g, is_add_group_hom.map_neg f m],
   end
+
+  /-
+  bad lean:
+
+  unfold coe_fn has_coe_to_fun.coe,
+  unfold cocycle.map,
+  dsimp,
+  unfold coe_fn has_coe_to_fun.coe,
+  dsimp,
+  I also used set_option pp.notation false (temporarily) because 
+  I couldn't remember what the actual function name was for the notation ⇑.
+  in the main Lean window, if you type #print notation ⇑ it tells you the name 
+  of the function, and if you hover over the ⇑ it tells you the keyboard shortcut.
+  -/
 
 instance (G : Type*) [group G]
   {A : Type*} [add_comm_group A] [G_module G A]
@@ -197,6 +216,11 @@ instance (G : Type*) [group G]
   is_add_group_hom (cocycle.map G f) :=
 { map_add := begin 
   intros a b,
-  
-  sorry
+  show cocycle.map G f (a + b) = (cocycle.map G f a) + (cocycle.map G f b),
+  cases a with a ha,
+  cases b with b hb,
+  apply cocycle.eq,
+  ext g,
+  show f (a g + b g)  = f (a g) + f (b g),
+  rw G_module_hom.add G f (a g) (b g),
   end }
