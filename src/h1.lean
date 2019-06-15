@@ -369,3 +369,45 @@ noncomputable def delta  (G : Type*) [group G]
   (hg : surjective g) (hfg : range f = ker g)
   (c : H0 G C) : H1 G A :=
   quotient_add_group.mk (delta_cocycle G hf hg hfg c)
+
+  /- H0(G,B) -> H0(G,C) -> H1(G,A) -/
+lemma h0b_hoc_h1a_exact (G : Type*) [group G]
+  {A : Type*} [add_comm_group A] [G_module G A]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  {C : Type*} [add_comm_group C] [G_module G C]
+  {f : A → B} [G_module_hom G f]
+  {g : B → C} [G_module_hom G g]
+  (hf : injective f)
+  (hg : surjective g) (hfg : range f = ker g)
+  : is_exact (H0_f G g) (delta G) :=
+  begin
+  sorry
+  end
+
+  /- H0(G,C) -> H1(G,A) -> H1(G,B) -/
+lemma h0c_h1a_h1b_exact (G : Type*) [group G]
+  {A : Type*} [add_comm_group A] [G_module G A]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  {C : Type*} [add_comm_group C] [G_module G C]
+  {f : A → B} [G_module_hom G f]
+  {g : B → C} [G_module_hom G g]
+  (hf : injective f)
+  (hg : surjective g) (hfg : range f = ker g)
+  : is_exact (delta G) (H1_f G f) :=
+  begin
+  sorry
+  end
+
+  /- H1(G,A) -> H1(G,B) -> H1(G,C) -/
+  lemma h1a_h1b_h1c_exact (G : Type*) [group G]
+  {A : Type*} [add_comm_group A] [G_module G A]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  {C : Type*} [add_comm_group C] [G_module G C]
+  {f : A → B} [G_module_hom G f]
+  {g : B → C} [G_module_hom G g]
+  (hf : injective f)
+  (hg : surjective g) (hfg : range f = ker g)
+  : is_exact (H1_f G f) (H1_f G g) :=
+  begin
+  sorry
+  end
