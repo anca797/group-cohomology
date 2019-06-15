@@ -411,3 +411,18 @@ lemma h0c_h1a_h1b_exact (G : Type*) [group G]
   begin
   sorry
   end
+
+
+instance (G : Type*) [group G]
+  {A : Type*} [add_comm_group A] [G_module G A]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  {C : Type*} [add_comm_group C] [G_module G C]
+  {f : A → B} [G_module_hom G f]
+  {g : B → C} [G_module_hom G g]
+  (hf : injective f)
+  (hg : surjective g) (hfg : range f = ker g)
+  (c : H0 G C) : is_add_group_hom (delta G) 
+  :=
+  begin
+  sorry
+  end
