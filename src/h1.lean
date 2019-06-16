@@ -168,8 +168,9 @@ instance : is_add_subgroup (coboundary G M) :=
 def H1 (G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M] :=
   quotient_add_group.quotient (coboundary G M)
 
-  instance (G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M]
-  : add_comm_group (H1 G M) := quotient_add_group.add_comm_group (coboundary G M)
+instance (G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M]
+  : add_comm_group (H1 G M) 
+  := quotient_add_group.add_comm_group (coboundary G M)
 
 
 def cocycle.map (G : Type*) [group G]
@@ -389,7 +390,15 @@ instance
   (hf : injective f)
   (hg : surjective g) (hfg : range f = ker g)
 : is_add_group_hom (delta G hf hg hfg) :=
-{ map_add := sorry }
+{ map_add := 
+begin
+intros a b,
+show delta G hf hg hfg (a + b) = (delta G hf hg hfg a) + (delta G hf hg hfg b),
+cases a with a ha,
+cases b with b hb,
+
+sorry
+end }
 
   /- H0(G,B) -> H0(G,C) -> H1(G,A) -/
 lemma h0b_hoc_h1a_exact (G : Type*) [group G]
@@ -401,9 +410,18 @@ lemma h0b_hoc_h1a_exact (G : Type*) [group G]
   (hf : injective f)
   (hg : surjective g) (hfg : range f = ker g)
   : is_exact (H0_f G g) (delta G hf hg hfg) :=
-  begin
-  sorry
-  end
+begin
+  apply subset.antisymm, 
+  { intros x h,
+    rw mem_ker,
+    sorry
+  },
+  { intros x h,
+    rw mem_ker at h,
+    unfold delta at h,
+    sorry
+  },
+end
 
   /- H0(G,C) -> H1(G,A) -> H1(G,B) -/
 lemma h0c_h1a_h1b_exact (G : Type*) [group G]
@@ -415,9 +433,18 @@ lemma h0c_h1a_h1b_exact (G : Type*) [group G]
   (hf : injective f)
   (hg : surjective g) (hfg : range f = ker g)
   : is_exact (delta G hf hg hfg) (H1_f G f) :=
-  begin
-  sorry
-  end
+begin
+  apply subset.antisymm,
+  { intros x h,
+    rw mem_ker,
+    sorry
+  },
+  { intros x h,
+    rw mem_ker at h,
+    unfold H1_f at h,
+    sorry
+  },
+end
 
   /- H1(G,A) -> H1(G,B) -> H1(G,C) -/
   lemma h1a_h1b_h1c_exact (G : Type*) [group G]
@@ -429,6 +456,16 @@ lemma h0c_h1a_h1b_exact (G : Type*) [group G]
   (hf : injective f)
   (hg : surjective g) (hfg : range f = ker g)
   : is_exact (H1_f G f) (H1_f G g) :=
-  begin
-  sorry
-  end
+begin
+  apply subset.antisymm,
+  { intros x h,
+    rw mem_ker,
+    sorry
+  },
+  { intros x h,
+    rw mem_ker at h,
+    unfold H1_f at h,
+
+    sorry
+  },
+end
