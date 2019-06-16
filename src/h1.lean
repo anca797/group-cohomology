@@ -168,6 +168,9 @@ instance : is_add_subgroup (coboundary G M) :=
 def H1 (G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M] :=
   quotient_add_group.quotient (coboundary G M)
 
+  instance (G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M]
+  : add_comm_group (H1 G M) := quotient_add_group.add_comm_group (coboundary G M)
+
 
 def cocycle.map (G : Type*) [group G]
   {A : Type*} [add_comm_group A] [G_module G A]
@@ -239,6 +242,12 @@ def H1_f (G : Type*) [group G]
   (f : A → B) [G_module_hom G f] :
   H1 G A → H1 G B := quotient_add_group.map (coboundary G A) (coboundary G B)
     (cocycle.map G f) (coboundary.map G f)
+
+instance (G : Type*) [group G]
+  {A : Type*} [add_comm_group A] [G_module G A]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  (f : A → B) [G_module_hom G f] :
+  is_add_group_hom (H1_f G f) := { map_add := sorry }    
 
 open set function is_add_group_hom
 
