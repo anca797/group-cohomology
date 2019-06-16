@@ -379,8 +379,7 @@ lemma h0b_hoc_h1a_exact (G : Type*) [group G]
   {g : B → C} [G_module_hom G g]
   (hf : injective f)
   (hg : surjective g) (hfg : range f = ker g)
-  (c : H0 G C)
-  : is_exact (H0_f G g) (delta G hf hg hfg c) :=
+  : is_exact (H0_f G g) (delta G hf hg hfg) :=
   begin
   sorry
   end
@@ -394,8 +393,7 @@ lemma h0c_h1a_h1b_exact (G : Type*) [group G]
   {g : B → C} [G_module_hom G g]
   (hf : injective f)
   (hg : surjective g) (hfg : range f = ker g)
-  (c : H0 G C)
-  : is_exact (delta G hf hg hfg c) (H1_f G f) :=
+  : is_exact (delta G hf hg hfg) (H1_f G f) :=
   begin
   sorry
   end
@@ -405,8 +403,8 @@ lemma h0c_h1a_h1b_exact (G : Type*) [group G]
   {A : Type*} [add_comm_group A] [G_module G A]
   {B : Type*} [add_comm_group B] [G_module G B]
   {C : Type*} [add_comm_group C] [G_module G C]
-  {f : A → B} [G_module_hom G f]
-  {g : B → C} [G_module_hom G g]
+  {f : A → B} [G_module_hom G f] 
+  {g : B → C} [G_module_hom G g] 
   (hf : injective f)
   (hg : surjective g) (hfg : range f = ker g)
   : is_exact (H1_f G f) (H1_f G g) :=
@@ -423,8 +421,10 @@ instance (G : Type*) [group G]
   {g : B → C} [G_module_hom G g]
   (hf : injective f)
   (hg : surjective g) (hfg : range f = ker g)
-  (c : H0 G C) : is_add_group_hom (delta G hf hg hfg c) 
+  : is_add_group_hom (delta G hf hg hfg) 
   :=
+  { map_add :=
   begin
   sorry
   end
+  }
