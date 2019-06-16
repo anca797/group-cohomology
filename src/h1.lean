@@ -248,7 +248,8 @@ instance (G : Type*) [group G]
   {A : Type*} [add_comm_group A] [G_module G A]
   {B : Type*} [add_comm_group B] [G_module G B]
   (f : A → B) [G_module_hom G f] :
-  is_add_group_hom (H1_f G f) := { map_add := sorry }    
+  is_add_group_hom (H1_f G f) := quotient_add_group.map_is_add_group_hom 
+  (coboundary G A) (coboundary G B) (cocycle.map G f) (coboundary.map G f) 
 
 open set function is_add_group_hom
 
