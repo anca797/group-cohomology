@@ -1,11 +1,6 @@
 import h0
 import group_theory.quotient_group
 
-lemma quotient_group.map_mk {G : Type*} [group G] {N : set G} [normal_subgroup N]
-{H : Type*} [group H] {M : set H} [normal_subgroup M]
-(f : G → H) [is_group_hom f] (h : N ⊆ f ⁻¹' M) (g : G) :
-  quotient_group.map N M f h (quotient_group.mk g) = quotient_group.mk (f g) := rfl
-
 variables (G : Type*) [group G] (M : Type*) [add_comm_group M]
 [G_module G M]
 
@@ -248,6 +243,12 @@ def H1_f (G : Type*) [group G]
   (f : A → B) [G_module_hom G f] :
   H1 G A → H1 G B := quotient_add_group.map (coboundary G A) (coboundary G B)
     (cocycle.map G f) (coboundary.map G f)
+
+lemma cocycle.map_mk (G : Type*) [group G]
+  {A : Type*} [add_comm_group A] [G_module G A]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  (f : A → B) [G_module_hom G f] (ca : cocycle G A) :
+  H1_f G f (quotient_add_group.mk ca) = quotient_add_group.mk (cocycle.map G f ca) := rfl
 
 instance (G : Type*) [group G]
   {A : Type*} [add_comm_group A] [G_module G A]
@@ -520,8 +521,25 @@ begin
     induction fa,
     swap,
     refl,
+    change H1_f G f (quotient_add_group.mk fa) = _ at hfa,
     rw ←hfa,
-    sorry
+    rw cocycle.map_mk G f fa,
+    rw cocycle.map_mk G g,
+    suffices : (cocycle.map G g (cocycle.map G f fa)) ∈ ker (quotient_add_group.mk),
+      rw mem_ker at this,
+      exact this,
+      swap, apply_instance,
+      swap, apply_instance,
+    rw quotient_add_group.ker_mk,
+    use 0,
+    intro x,
+    cases fa with fa pfa,
+    show g (f (fa x)) = _,
+    rw g_zero,
+    rw sub_zero,
+    rw ← mem_ker g,
+    rw ← hfg,
+    use fa x,
   },
   { intros x h,
     rw mem_ker at h,
