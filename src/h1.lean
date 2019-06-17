@@ -1,6 +1,11 @@
 import h0
 import group_theory.quotient_group
 
+lemma quotient_group.map_mk {G : Type*} [group G] {N : set G} [normal_subgroup N]
+{H : Type*} [group H] {M : set H} [normal_subgroup M]
+(f : G → H) [is_group_hom f] (h : N ⊆ f ⁻¹' M) (g : G) :
+  quotient_group.map N M f h (quotient_group.mk g) = quotient_group.mk (f g) := rfl
+
 variables (G : Type*) [group G] (M : Type*) [add_comm_group M]
 [G_module G M]
 
@@ -302,6 +307,26 @@ lemma delta_im_b (G : Type*) [group G]
   (hg : surjective g) (c : H0 G C) :
   g (delta_b G hg c) = c.val := classical.some_spec (hg c.val)
 
+/- c1,c2 : H0 G C then delta_b(c1) + delta_b(c2) - delta_b(c1+c2) is in ker g-/
+lemma delta_mem_ker (G : Type*) [group G]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  {C : Type*} [add_comm_group C] [G_module G C]
+  {g : B → C} [G_module_hom G g]
+  (hg : surjective g) (c1 c2 : H0 G C) :
+  delta_b G hg c1 + delta_b G hg c2 - delta_b G hg (c1+c2) ∈ ker g :=
+begin
+rw mem_ker,
+rw is_add_group_hom.map_sub g,
+rw is_add_group_hom.map_add g,
+rw delta_im_b G hg,
+rw delta_im_b G hg,
+rw delta_im_b G hg,
+cases c1 with c1 h1,
+cases c2 with c2 h2,
+show c1 + c2 - (c1 + c2) = 0,
+simp,
+end
+
 lemma delta_gb_sub_b_mem_ker (G : Type*) [group G]
   {B : Type*} [add_comm_group B] [G_module G B]
   {C : Type*} [add_comm_group C] [G_module G C]
@@ -395,10 +420,40 @@ instance
 begin
 intros a b,
 show delta G hf hg hfg (a + b) = (delta G hf hg hfg a) + (delta G hf hg hfg b),
+unfold delta,
+let Q := (quotient_add_group.mk : cocycle G A → H1 G A),
+rw ←is_add_group_hom.map_add Q,
+have eq' : ∀ x y : cocycle G A, Q x = Q y ↔ -x + y ∈ coboundary G A := λ x y, quotient_add_group.eq,
+show Q (delta_cocycle G hf hg hfg (a+b)) = _,
+rw eq',
+have h := delta_mem_ker G hg a b,
+rw ←hfg at h,
+cases h with a' ha',
+use a',
+intro g,
+apply hf,
+rw is_add_group_hom.map_sub f,
+rw G_module_hom.G_hom f g,
+rw ha',
 cases a with a ha,
 cases b with b hb,
-
-sorry
+unfold_coes,
+unfold delta_cocycle,
+dsimp,
+show f
+      (-delta_cocycle_aux G hg hfg ⟨a + b, _⟩ g +
+          (delta_cocycle_aux G hg hfg ⟨a, ha⟩ g
+           + delta_cocycle_aux G hg hfg ⟨b, hb⟩ 
+         g)) =  _,
+rw is_add_group_hom.map_add f,
+rw is_add_group_hom.map_add f,
+rw is_add_group_hom.map_neg f,
+rw delta_cocycle_aux_a G hg hfg,
+rw delta_cocycle_aux_a G hg hfg,
+rw delta_cocycle_aux_a G hg hfg,
+simp,
+rw g_neg,
+refl,
 end }
 
   /- H0(G,B) -> H0(G,C) -> H1(G,A) -/
@@ -459,8 +514,13 @@ end
   : is_exact (H1_f G f) (H1_f G g) :=
 begin
   apply subset.antisymm,
-  { intros x h,
+  { intros fb h,
     rw mem_ker,
+    cases h with fa hfa,
+    induction fa,
+    swap,
+    refl,
+    rw ←hfa,
     sorry
   },
   { intros x h,

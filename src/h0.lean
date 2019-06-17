@@ -155,6 +155,7 @@ end
 
 #check mem_ker
 /-- subset.antisymm -/
+/- H0(G,A) -> H0(G,B) -> H0(G,C) -/
 lemma h0_exact {A B C : Type*} [add_comm_group A] [G_module G A] 
 [add_comm_group B] [G_module G B] [add_comm_group C] [G_module G C]
   (f : A → B) (g : B → C)  (H1 : injective f) [G_module_hom G f]
