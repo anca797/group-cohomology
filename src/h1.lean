@@ -1,6 +1,24 @@
 import h0
 import group_theory.quotient_group
 
+theorem function.lift_aux {X : Type*} {Y : Type*} {Z : Type*} (f : X → Y)
+(i : Z → Y) (h2 : set.range f ⊆ set.range i) (x : X) : ∃ z : Z, i z = f x :=
+begin
+show f x ∈ set.range i,
+apply h2,
+use x, 
+end
+
+noncomputable def function.lift {X : Type*} {Y : Type*} {Z : Type*} (f : X → Y)
+(i : Z → Y) (h2 : set.range f ⊆ set.range i) :
+(X → Z) :=
+λ x, classical.some $ function.lift_aux f i h2 x
+
+theorem function.lift_eq {X : Type*} {Y : Type*} {Z : Type*} (f : X → Y)
+(i : Z → Y) (h2 : set.range f ⊆ set.range i) (x : X) :
+ i (function.lift f i h2 x) = f x := classical.some_spec $ function.lift_aux f i h2 x
+ 
+
 variables (G : Type*) [group G] (M : Type*) [add_comm_group M]
 [G_module G M]
 
@@ -24,6 +42,17 @@ theorem cocycle.eq (e f : cocycle G M) : (e : G → M) = f → e = f := subtype.
   f.property
 
 namespace cocycle
+
+
+variable {M}
+def mk (m : M) : (cocycle G M) := ⟨λ g, g • m - m,
+begin
+intros g h,
+rw ←G_module.mul,
+rw G_module.map_sub,
+simp,
+end ⟩ 
+variable (M)
 
 /-- The zero cocycle -/
 def zero : cocycle G M := ⟨λ g, 0, begin 
@@ -133,6 +162,49 @@ instance : add_comm_group (cocycle G M) :=
   rw add_comm,
   end }
 
+  def map (G : Type*) [group G]
+  {A : Type*} [add_comm_group A] [G_module G A]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  (f : A → B) [G_module_hom G f] :
+  cocycle G A → cocycle G B :=
+λ c, ⟨λ g, f (c g), begin 
+intros g h,
+rw cocycle.condition A c,
+rw G_module_hom.add G f (c g) (g • (c h)),
+rw G_module_hom.G_hom f g,
+end⟩
+
+noncomputable def lift (G : Type*) [group G]
+  {A : Type*} [add_comm_group A] [G_module G A]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  (f : A → B) [G_module_hom G f] (hf : function.injective f)
+  (x : cocycle G B) (h : set.range x ⊆ set.range f) : (cocycle G A) :=
+  ⟨function.lift x f h, begin 
+  intros g1 g2,
+  apply hf,
+  rw function.lift_eq x f,
+  rw is_add_group_hom.map_add f,
+  rw function.lift_eq x f,
+  rw G_module_hom.G_hom f,
+  rw function.lift_eq x f,
+  exact x.property g1 g2,
+  apply_instance,
+  end⟩ 
+
+theorem lift_eq (G : Type*) [group G]
+  {A : Type*} [add_comm_group A] [G_module G A]
+  {B : Type*} [add_comm_group B] [G_module G B]
+  (f : A → B) [G_module_hom G f] (hf : function.injective f)
+  (x : cocycle G B) (h : set.range x ⊆ set.range f) :
+  (map G f (lift G f hf x h)) = x :=
+  begin
+  apply cocycle.eq,
+  ext g,
+  show f (function.lift (x) f h g) = x g,
+  rw function.lift_eq x f,
+  end
+
+
 end cocycle
 
 def coboundary (G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M] :=
@@ -172,18 +244,6 @@ instance (G : Type*) [group G] (M : Type*) [add_comm_group M] [G_module G M]
   : add_comm_group (H1 G M) 
   := quotient_add_group.add_comm_group (coboundary G M)
 
-
-def cocycle.map (G : Type*) [group G]
-  {A : Type*} [add_comm_group A] [G_module G A]
-  {B : Type*} [add_comm_group B] [G_module G B]
-  (f : A → B) [G_module_hom G f] :
-  cocycle G A → cocycle G B :=
-λ c, ⟨λ g, f (c g), begin 
-intros g h,
-rw cocycle.condition A c,
-rw G_module_hom.add G f (c g) (g • (c h)),
-rw G_module_hom.G_hom f g,
-end⟩
 
 lemma coboundary.map (G : Type*) [group G]
   {A : Type*} [add_comm_group A] [G_module G A]
@@ -438,9 +498,6 @@ rw G_module_hom.G_hom f g,
 rw ha',
 cases a with a ha,
 cases b with b hb,
-unfold_coes,
-unfold delta_cocycle,
-dsimp,
 show f
       (-delta_cocycle_aux G hg hfg ⟨a + b, _⟩ g +
           (delta_cocycle_aux G hg hfg ⟨a, ha⟩ g
@@ -542,9 +599,48 @@ begin
     use fa x,
   },
   { intros x h,
+    induction x,
+    swap,
+    refl,
     rw mem_ker at h,
     unfold H1_f at h,
-
-    sorry
+    change quotient_add_group.mk (cocycle.map G g x) = 0 at h,
+    rw ←mem_ker quotient_add_group.mk at h,
+    swap,
+    apply_instance,
+    swap,
+    apply_instance,
+    rw quotient_add_group.ker_mk at h,
+    cases h with c hc,
+    rcases (hg c) with ⟨b, rfl⟩,
+    let y := x - cocycle.mk b,
+    have hy : range y ⊆ range f,
+    {
+      rintros b' ⟨γ, rfl⟩,
+      rw hfg,
+      rw mem_ker,
+      change g ( x γ - (γ • b - b)) = 0,
+      rw is_add_group_hom.map_sub g,
+      rw sub_eq_zero,
+      convert hc γ,
+      rw is_add_group_hom.map_sub g,
+      congr',
+      rw G_module_hom.G_hom g,
+      apply_instance,
+    },
+    let z : cocycle G A := cocycle.lift G f hf y hy,
+    use quotient_add_group.mk z,
+    change quotient_add_group.mk (cocycle.map G f (cocycle.lift G f hf y hy)) = quotient_add_group.mk x,
+    rw cocycle.lift_eq,
+    apply quotient_add_group.eq.2,
+    use b,
+    have hb : -y + x = cocycle.mk b,
+    {
+      show -(x - cocycle.mk b) + x = _,
+      simp,
+    },
+    intro g',
+    rw hb,
+    refl,
   },
 end
