@@ -526,8 +526,20 @@ lemma h0b_hoc_h1a_exact (G : Type*) [group G]
   : is_exact (H0_f G g) (delta G hf hg hfg) :=
 begin
   apply subset.antisymm, 
-  { intros x h,
+  { intros fc h,
     rw mem_ker,
+    cases h with b hb,
+    cases fc with c fc,
+    cases b with b propb,
+    injection hb,
+    change g b = c at h_1,
+    unfold delta,
+    suffices : delta_cocycle G hf hg hfg ⟨c, fc⟩ ∈ ker (quotient_add_group.mk),
+      rw mem_ker at this,
+      exact this,
+      swap, apply_instance,
+      swap, apply_instance,
+    rw quotient_add_group.ker_mk,  
     sorry
   },
   { intros x h,
@@ -595,7 +607,11 @@ begin
     change delta G hf hg hfg ⟨c, _⟩ = quotient_add_group.mk x,
     unfold delta,
     apply quotient_add_group.eq.2,
-    --let b' : B := delta_b G hg c,
+    have hc : ∀ γ : G, γ • c = c,
+      sorry,
+    let b' : B := delta_b G hg ⟨c, hc⟩,
+    have hb' : b - b' ∈ range f,
+    sorry,
     sorry
   },
 end
