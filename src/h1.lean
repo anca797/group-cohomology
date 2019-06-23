@@ -581,7 +581,8 @@ begin
     rw quotient_add_group.ker_mk at h,
     cases h with b hb,
     change ∀ (g : G), f (x g) = g • b - b at hb,
-    use g b,
+    let c : C := g b,
+    use c,
     intro γ,
     rw ←sub_eq_zero,
     rw ←G_module_hom.G_hom g,
@@ -591,8 +592,10 @@ begin
     rw ←hb,
     use x γ,
     apply_instance,
-    change delta G hf hg hfg ⟨g b, _⟩ = quotient_add_group.mk x,
+    change delta G hf hg hfg ⟨c, _⟩ = quotient_add_group.mk x,
     unfold delta,
+    apply quotient_add_group.eq.2,
+    --let b' : B := delta_b G hg c,
     sorry
   },
 end
