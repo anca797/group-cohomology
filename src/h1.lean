@@ -574,6 +574,14 @@ begin
     rw quotient_add_group.ker_mk at h,
     cases h with b hb,
     use g b,
+    intro γ,
+    rw ←sub_eq_zero,
+    rw ← G_module_hom.G_hom g,
+    rw ←is_add_group_hom.map_sub g,
+    rw ←mem_ker g,
+    rw ←hfg,
+    
+
     
     sorry,
   
