@@ -555,8 +555,16 @@ begin
     rw ←hc,
     unfold delta,
     rw cocycle.map_mk G f (delta_cocycle G hf hg hfg c),
-    unfold delta_cocycle,
-    unfold delta_cocycle_aux,
+    suffices : (cocycle.map G f (delta_cocycle G hf hg hfg c)) ∈ ker (quotient_add_group.mk),
+      rw mem_ker at this,
+      exact this,
+      swap, apply_instance,
+      swap, apply_instance,
+    rw quotient_add_group.ker_mk,
+    use 0,
+    intro γ,
+    --change f (delta_cocycle G hf hg hfg c γ) = _,
+    --rw ←delta_cocycle_aux_a,
     sorry
   },
   { intros x h,
@@ -573,19 +581,19 @@ begin
     apply_instance,
     rw quotient_add_group.ker_mk at h,
     cases h with b hb,
+    change ∀ (g : G), f (x g) = g • b - b at hb,
     use g b,
     intro γ,
     rw ←sub_eq_zero,
-    rw ← G_module_hom.G_hom g,
+    rw ←G_module_hom.G_hom g,
     rw ←is_add_group_hom.map_sub g,
     rw ←mem_ker g,
     rw ←hfg,
-    
-
-    
-    sorry,
-  
-
+    rw ←hb,
+    use x γ,
+    apply_instance,
+    change delta G hf hg hfg ⟨g b, _⟩ = quotient_add_group.mk x,
+    unfold delta,
     sorry
   },
 end
