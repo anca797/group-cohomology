@@ -569,8 +569,11 @@ begin
       simp,
   },
   { intros x h,
+    cases x with c fc,
     rw mem_ker at h,
     unfold delta at h,
+    rw ←mem_ker quotient_add_group.mk at h,
+    --delta_cocycle G hf hg hfg ⟨c, fc⟩ at h,
     sorry
   },
 end
