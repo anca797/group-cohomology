@@ -608,9 +608,27 @@ begin
     show c - g b = c,
     rw hb,
     simp,
+    rw ←sub_add,
+    rw ←sub_add at h2,
+    rw add_comm (γ • b' - γ • b - b') b,
+    rw add_comm (γ • b' - b' - γ • b) b at h2,
+    --change γ • b' - b' - (γ • b + - b) = 0 at h2,
+    rw ←sub_add_eq_sub_sub_swap (γ • b') b' (γ • b),
+    --rw sub_add (γ • b') b' (- γ • b) at h2,
+    
+    
+    
     sorry
   },
 end
+
+#check add_add_add_comm
+#check add_comm
+#check sub_add_eq_sub_sub_swap
+#check sub_add
+
+
+
 
   /- H0(G,C) -> H1(G,A) -> H1(G,B) -/
 lemma h0c_h1a_h1b_exact (G : Type*) [group G]

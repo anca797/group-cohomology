@@ -137,8 +137,6 @@ def short_exact {A B C : Type*} [add_comm_group A] [add_comm_group B] [add_comm_
   function.surjective g ∧ 
   is_exact f g
 
-  #check H0_f
-
 lemma H0inj_of_inj {A B : Type*} [add_comm_group A] [G_module G A] 
 [add_comm_group B] [G_module G B] (f : A → B) 
 (H1 : injective f) [G_module_hom G f] : injective (H0_f G f) := 
@@ -153,8 +151,6 @@ begin
   exact subtype.eq H3    
 end
 
-#check mem_ker
-/-- subset.antisymm -/
 /- H0(G,A) -> H0(G,B) -> H0(G,C) -/
 lemma h0_exact {A B C : Type*} [add_comm_group A] [G_module G A] 
 [add_comm_group B] [G_module G B] [add_comm_group C] [G_module G C]
